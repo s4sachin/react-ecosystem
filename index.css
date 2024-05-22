@@ -28,6 +28,12 @@
     cursor: pointer;
 }
 
+.filter {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+
 .filter-btn {
     padding: 10px;
     cursor: pointer;
