@@ -1,22 +1,25 @@
-import { React, useEffect, useState } from "react";
+import { React } from "react";
 import { useParams } from "react-router-dom";
 import Shimmer from "./Shimmer";
 import { MENU_URL_PREFIX, MENU_URL_SUFFIX } from "../utils/constants";
+import useRestaurantMenu from "../utils/useRestaurantMenu";
 
 const RestaurantMenu = () => {
-  const [resInfo, setResInfo] = useState(null);
+  // const [resInfo, setResInfo] = useState(null);
+
   const { resId } = useParams();
+  const resInfo = useRestaurantMenu(resId);
+  
+  // useEffect(() => {
+  //   fetchMenu();
+  // }, []);
 
-  useEffect(() => {
-    fetchMenu();
-  }, []);
-
-  const fetchMenu = async () => {
-    const data = await fetch(MENU_URL_PREFIX + resId + MENU_URL_SUFFIX);
-    const json = await data.json();
-    console.log(json?.data);
-    setResInfo(json?.data);
-  };
+  // const fetchMenu = async () => {
+  //   const data = await fetch(MENU_URL_PREFIX + resId + MENU_URL_SUFFIX);
+  //   const json = await data.json();
+  //   console.log(json?.data);
+  //   setResInfo(json?.data);
+  // };
   if (!resInfo) return <Shimmer />;
 
   const { name, cloudinaryImageId, avgRating, cuisines, sla } =
