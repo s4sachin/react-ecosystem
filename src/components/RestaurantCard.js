@@ -19,4 +19,17 @@ const RestaurantCard = (props) => {
     );
   };
 
+  // Creating a higher order comp, which will take the Restaurant card as Input and return Promoted Restaurant Card 
+
+  export const withPromotedLabel = () => {
+    return (props) => {
+      return (
+        <div>
+          <label>Promoted</label>
+          <RestaurantCard {...props }/>
+        </div>
+      )
+    }
+  } 
+
   export default RestaurantCard;

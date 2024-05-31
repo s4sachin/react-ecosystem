@@ -1,4 +1,4 @@
-import RestaurantCard from "./RestaurantCard";
+import RestaurantCard, { withPromotedLabel } from "./RestaurantCard";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Shimmer from "./Shimmer";
@@ -10,30 +10,32 @@ const Body = () => {
   const [filteredRestaurants, setFilteredRestaurants] = useState(null);
   const [searchText, setSearchText] = useState("");
 
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
+  const RestaurantCardPromoted = withPromotedLabel(RestaurantCard);
 
-  // const fetchData = async () => {
-  //   const data = await fetch(
-  //     RESTAURANT_LIST_URL
-  //   );
+  const resList = useRestaurantList();
 
-  //   const json = await data.json();
+  useEffect(() => {
+    if (resList) {
+      const restaurants = resList?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants;
+      setListOfRestaurants(restaurants);
+      setFilteredRestaurants(restaurants);
+    }
+  }, [resList]);
 
-  //   setListOfRestaurants(
-  //     json?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants
-  //   );
-  //   setFilteredRestaurants(
-  //     json?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants
-  //   );
-  // };
+  const handleSearch = () => {
+    setFilteredRestaurants(
+      listOfRestaurants.filter((res) =>
+        res?.info?.name.toLowerCase().includes(searchText.toLowerCase())
+      )
+    );
+    setSearchText("");
+  };
 
-    const resList = useRestaurantList();
-    console.log(resList);
-    setListOfRestaurants(resList?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants );
-    setFilteredRestaurants(resList?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants );
-
+  const handleFilterTopRated = () => {
+    setFilteredRestaurants(
+      listOfRestaurants.filter((res) => res?.info?.avgRating >= 4)
+    );
+  };
 
   return !listOfRestaurants ? (
     <Shimmer />
@@ -49,32 +51,11 @@ const Body = () => {
             }}
             placeholder="search food.."
           ></input>
-          <button
-            type="button"
-            className=""
-            onClick={() => {
-              //Filter the restaurants by search string.
-              setFilteredRestaurants(
-                listOfRestaurants.filter((res) =>
-                  res?.info?.name
-                    .toLowerCase()
-                    .includes(searchText.toLowerCase())
-                )
-              );
-              setSearchText("");
-            }}
-          >
+          <button type="button" className="" onClick={handleSearch}>
             Search
           </button>
         </div>
-        <button
-          className="filter-btn"
-          onClick={() => {
-            setListOfRestaurants(
-              listOfRestaurants.filter((res) => res?.info?.avgRating >= 4)
-            );
-          }}
-        >
+        <button className="filter-btn" onClick={handleFilterTopRated}>
           Top Rated Restaurants
         </button>
       </div>
@@ -82,7 +63,11 @@ const Body = () => {
         {filteredRestaurants.map((res) => {
           return (
             <Link to={"/restaurants/" + res?.info?.id} key={res?.info?.id}>
-              <RestaurantCard resData={res} />
+              {res?.info?.promoted ? (
+                <RestaurantCardPromoted resData={res} />
+              ) : (
+                <RestaurantCard resData={res} />
+              )}
             </Link>
           );
         })}
